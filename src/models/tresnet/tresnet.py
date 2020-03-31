@@ -7,7 +7,24 @@ from src.models.tresnet.layers.anti_aliasing import AntiAliasDownsampleLayer
 from .layers.avg_pool import FastGlobalAvgPool2d
 from .layers.squeeze_and_excite import SEModule
 from src.models.tresnet.layers.space_to_depth import SpaceToDepthModule
-from inplace_abn import InPlaceABN
+from inplace_abn import InPlaceABN, ABN
+
+
+def InplacABN_to_ABN(module: nn.Module) -> nn.Module:
+    # convert all InplaceABN layer to bit-accurate ABN layers.
+    if isinstance(module, InPlaceABN):
+        module_new = ABN(module.num_features, activation=module.activation,
+                         activation_param=module.activation_param)
+        for key in module.state_dict():
+            module_new.state_dict()[key].copy_(module.state_dict()[key])
+        module_new.training = module.training
+        module_new.weight.data = module_new.weight.abs() + module_new.eps
+        return module_new
+    for name, child in reversed(module._modules.items()):
+        new_child = InplacABN_to_ABN(child)
+        if new_child != child:
+            module._modules[name] = new_child
+    return module
 
 
 def IABN2Float(module: nn.Module) -> nn.Module:
@@ -147,6 +164,7 @@ class TResNet(nn.Module):
         self.embeddings = []
         self.global_pool = nn.Sequential(OrderedDict([('global_pool_layer', global_pool_layer)]))
         self.num_features = (self.planes * 8) * Bottleneck.expansion
+        self.num_classes = num_classes
         fc = nn.Linear(self.num_features, num_classes)
         self.head = nn.Sequential(OrderedDict([('fc', fc)]))
 
