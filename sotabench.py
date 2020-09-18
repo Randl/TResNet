@@ -1,5 +1,7 @@
 import gc
 
+from inplace_abn import ABN
+from torch import nn
 from torchbench.image_classification import ImageNet
 import urllib.request
 import torch
@@ -56,11 +58,11 @@ print('Benchmarking TResNet-L-V2')
 # Run the benchmark
 ImageNet.benchmark(
     model=model,
-    paper_model_name='TResNet-L-V2',
+    paper_model_name='TResNet-L-V2  (FP16)',
     paper_arxiv_id='2003.13630',
     input_transform=val_tfms,
     send_data_to_device=send_data,
-    batch_size=280,
+    batch_size=560,
     num_workers=args.num_workers,
     num_gpu=1,
     pin_memory=True,
@@ -94,11 +96,11 @@ print('Benchmarking TResNet-M')
 # Run the benchmark
 ImageNet.benchmark(
     model=model,
-    paper_model_name='TResNet-M',
+    paper_model_name='TResNet-M  (FP16)',
     paper_arxiv_id='2003.13630',
     input_transform=val_tfms,
     send_data_to_device=send_data,
-    batch_size=400,
+    batch_size=800,
     num_workers=args.num_workers,
     num_gpu=1,
     pin_memory=True,
@@ -117,7 +119,7 @@ torch.cuda.empty_cache()
 # model.load_state_dict(state, strict=True)
 # model = InplacABN_to_ABN(model)
 # model = fuse_bn_recursively(model)
-# model = model.cuda()
+# model = model.cuda().half()
 # model.eval()
 #
 # val_bs = args.batch_size
@@ -163,7 +165,7 @@ torch.cuda.empty_cache()
 #
 # model = InplacABN_to_ABN(model)
 # model = fuse_bn_recursively(model)
-# model = model.cuda()
+# model = model.cuda().half()
 # model.eval()
 # print('Benchmarking TResNet-M (288-Mean-Max)')
 #
@@ -207,11 +209,11 @@ print('Benchmarking TResNet-L')
 # Run the benchmark
 ImageNet.benchmark(
     model=model,
-    paper_model_name='TResNet-L',
+    paper_model_name='TResNet-L (FP16)',
     paper_arxiv_id='2003.13630',
     input_transform=val_tfms,
     send_data_to_device=send_data,
-    batch_size=280,
+    batch_size=560,
     num_workers=args.num_workers,
     num_gpu=1,
     pin_memory=True,
@@ -240,7 +242,7 @@ torch.cuda.empty_cache()
 #
 # model = InplacABN_to_ABN(model)
 # model = fuse_bn_recursively(model)
-# model = model.cuda()
+# model = model.cuda().half()
 # model.eval()
 # print('Benchmarking TResNet-L (288-Mean-Max)')
 #
@@ -284,11 +286,11 @@ print('Benchmarking TResNet-XL')
 # Run the benchmark
 ImageNet.benchmark(
     model=model,
-    paper_model_name='TResNet-XL',
+    paper_model_name='TResNet-XL (FP16)',
     paper_arxiv_id='2003.13630',
     input_transform=val_tfms,
     send_data_to_device=send_data,
-    batch_size=250,
+    batch_size=500,
     num_workers=args.num_workers,
     num_gpu=1,
     pin_memory=True,
@@ -317,7 +319,7 @@ torch.cuda.empty_cache()
 #
 # model = InplacABN_to_ABN(model)
 # model = fuse_bn_recursively(model)
-# model = model.cuda()
+# model = model.cuda().half()
 # model.eval()
 # print('Benchmarking TResNet-XL (288-Mean-Max)')
 #
@@ -348,7 +350,7 @@ torch.cuda.empty_cache()
 # model.load_state_dict(state, strict=True)
 # model = InplacABN_to_ABN(model)
 # model = fuse_bn_recursively(model)
-# model = model.cuda()
+# model = model.cuda().half()
 # model.eval()
 #
 # val_bs = args.batch_size
@@ -385,7 +387,7 @@ torch.cuda.empty_cache()
 # model.load_state_dict(state, strict=True)
 # model = InplacABN_to_ABN(model)
 # model = fuse_bn_recursively(model)
-# model = model.cuda()
+# model = model.cuda().half()
 # model.eval()
 #
 # val_bs = args.batch_size
@@ -422,7 +424,7 @@ torch.cuda.empty_cache()
 # model.load_state_dict(state, strict=True)
 # model = InplacABN_to_ABN(model)
 # model = fuse_bn_recursively(model)
-# model = model.cuda()
+# model = model.cuda().half()
 # model.eval()
 #
 # val_bs = args.batch_size
