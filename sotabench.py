@@ -22,6 +22,16 @@ parser.add_argument('--val_zoom_factor', type=int, default=0.875)
 parser.add_argument('--batch_size', type=int, default=48)
 parser.add_argument('--num_workers', type=int, default=8)
 
+
+def send_data(input, target, device, dtype=torch.float16, non_blocking: bool = True):
+    input = input.to(device=device, dtype=dtype, non_blocking=non_blocking)
+
+    if target is not None:
+        target = target.to(device=device, dtype=dtype, non_blocking=non_blocking)
+
+    return input, target
+
+
 # parsing args
 args = parser.parse_args()
 
@@ -33,7 +43,7 @@ state = torch.load(model_path, map_location='cpu')['model']
 model.load_state_dict(state, strict=True)
 model = InplacABN_to_ABN(model)
 model = fuse_bn_recursively(model)
-model = model.cuda()
+model = model.cuda().half()
 model.eval()
 
 val_bs = args.batch_size
@@ -49,6 +59,7 @@ ImageNet.benchmark(
     paper_model_name='TResNet-L-V2',
     paper_arxiv_id='2003.13630',
     input_transform=val_tfms,
+    send_data_to_device=send_data,
     batch_size=280,
     num_workers=args.num_workers,
     num_gpu=1,
@@ -69,7 +80,7 @@ state = torch.load(model_path, map_location='cpu')['model']
 model.load_state_dict(state, strict=True)
 model = InplacABN_to_ABN(model)
 model = fuse_bn_recursively(model)
-model = model.cuda()
+model = model.cuda().half()
 model.eval()
 
 val_bs = args.batch_size
@@ -86,6 +97,7 @@ ImageNet.benchmark(
     paper_model_name='TResNet-M',
     paper_arxiv_id='2003.13630',
     input_transform=val_tfms,
+    send_data_to_device=send_data,
     batch_size=400,
     num_workers=args.num_workers,
     num_gpu=1,
@@ -181,7 +193,7 @@ state = torch.load(model_path, map_location='cpu')['model']
 model.load_state_dict(state, strict=True)
 model = InplacABN_to_ABN(model)
 model = fuse_bn_recursively(model)
-model = model.cuda()
+model = model.cuda().half()
 model.eval()
 
 val_bs = args.batch_size
@@ -198,6 +210,7 @@ ImageNet.benchmark(
     paper_model_name='TResNet-L',
     paper_arxiv_id='2003.13630',
     input_transform=val_tfms,
+    send_data_to_device=send_data,
     batch_size=280,
     num_workers=args.num_workers,
     num_gpu=1,
@@ -257,7 +270,7 @@ state = torch.load(model_path, map_location='cpu')['model']
 model.load_state_dict(state, strict=True)
 model = InplacABN_to_ABN(model)
 model = fuse_bn_recursively(model)
-model = model.cuda()
+model = model.cuda().half()
 model.eval()
 
 val_bs = args.batch_size
@@ -274,6 +287,7 @@ ImageNet.benchmark(
     paper_model_name='TResNet-XL',
     paper_arxiv_id='2003.13630',
     input_transform=val_tfms,
+    send_data_to_device=send_data,
     batch_size=250,
     num_workers=args.num_workers,
     num_gpu=1,
